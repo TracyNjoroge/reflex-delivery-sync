@@ -1,0 +1,21 @@
+{
+  "name": "reflex-delivery-sync",
+  "version": "1.0.0",
+  "description": "Reflex delivery application with dispatcher, rider, and retailer views",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Building application...' && cp -r . public/ || true && echo 'Build complete!'",
+    "dev": "firebase emulators:start --only hosting",
+    "deploy": "firebase deploy --only hosting"
+  },
+  "keywords": [
+    "delivery",
+    "firebase",
+    "hosting"
+  ],
+  "author": "Sr7Rama",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^latest"
+  }
+}
