@@ -872,8 +872,8 @@
     // Populate review screen
     function populateReview() {
       const fields = {
-        retailerName: 'reviewRetailerName',
-        location: 'reviewLocation',
+        customName: 'reviewCustomName',
+        address: 'reviewLocation',
         contactPerson: 'reviewContactPerson',
         phone: 'reviewPhone',
         deliveryDate: 'reviewDeliveryDate',
@@ -1004,7 +1004,7 @@
         address: document.getElementById('store-location-input').value, //Matches your "Store Location"
         contactPerson: document.getElementById('contactPerson').value,
         phone: document.getElementById('phone-number-input').value, //Matches your "Phone Number"
-        deliveryDate: document.getElementById('deliveryDate').value, //
+        deliveryDate: document.getElementById('deliveryDate').value, 
         productType: document.getElementById('productType').value,
         quantity: document.getElementById('quantity').value,
         specialInstructions: document.getElementById('specialInstructions').value
