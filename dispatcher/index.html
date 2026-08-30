@@ -3,79 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reflex Admin - On-Demand Dispatch</title>
+    <title>Reflex - Dispatch & Rider Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
-
-    <nav class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex items-center gap-3">
-            <div class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xl tracking-wider shadow-lg">REFLEX</div>
-            <span class="text-xs font-bold text-slate-400 tracking-widest uppercase hidden sm:inline border-l border-slate-800 pl-3">Dispatch Engine</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-full text-xs font-semibold border border-emerald-500/20">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Dashboard Active
-            </div>
-            <span class="text-sm text-slate-300 font-medium">Milkah (Dispatcher)</span>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <section class="lg:col-span-2 space-y-6">
-            <div class="flex justify-between items-center">
+<body class="bg-slate-900 text-slate-100 p-6 min-h-screen">
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- 1. Dispatcher / Retailer Portal -->
+        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800">
+            <div class="flex justify-between items-center mb-4">
                 <div>
-                    <h2 class="text-xl font-bold tracking-tight">Inbound Delivery Requests</h2>
-                    <p class="text-xs text-slate-400 mt-1">Incoming retailer requests matching active database keys</p>
+                    <h2 class="text-lg font-bold">Inbound Requests (Retailer)</h2>
+                    <p class="text-xs text-slate-400">Waiting for dispatch</p>
                 </div>
-                <button onclick="injectMockOrder()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700 cursor-pointer">
-                    + Simulate Incoming Request
-                </button>
+                <button onclick="injectMockOrder()" class="bg-amber-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg">+ Simulate Order</button>
             </div>
+            <div id="deliveries-list" class="space-y-3"></div>
+        </div>
 
-            <div id="deliveries-list" class="space-y-4">
-                <div id="empty-state" class="bg-slate-950 border border-slate-800 border-dashed rounded-2xl p-12 text-center text-slate-500">
-                    <span class="text-4xl block mb-3">📋</span>
-                    <p class="text-sm font-medium text-slate-400">Waiting for retail requests.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-6">
-            <div>
-                <h2 class="text-xl font-bold tracking-tight">Fleet Monitoring</h2>
-                <p class="text-xs text-slate-400 mt-1">Real-time status of available riders</p>
-            </div>
-            
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Active Riders</h3>
-                
-                <div class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center font-bold text-lg">🏍️</div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-200">Juma Pikipiki</p>
-                            <p class="text-xs text-slate-500">rider_01 • Nairobi Central</p>
-                        </div>
-                    </div>
-                    <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-emerald-500/20">AVAILABLE</span>
-                </div>
-
-                <div class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center font-bold text-lg">🏍️</div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-200">Moraa Rides</p>
-                            <p class="text-xs text-slate-500">rider_03 • Ngong Road</p>
-                        </div>
-                    </div>
-                    <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-emerald-500/20">AVAILABLE</span>
-                </div>
-            </div>
-        </section>
-
-    </main>
+        <!-- 2. Rider Portal (Juma Pikipiki / rider_01) -->
+        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800">
+            <h2 class="text-lg font-bold mb-1 text-emerald-400">🏍️ Rider Portal (Juma - rider_01)</h2>
+            <p class="text-xs text-slate-400 mb-4">Assigned trips syncing in real time</p>
+            <div id="rider-list" class="space-y-3"></div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -85,84 +36,59 @@
             apiKey: "AIzaSyAwtJj_eRuROtBoLdek-TLxLqRC4lOc3cM",
             authDomain: "reflex-779d1.firebaseapp.com",
             databaseURL: "https://reflex-779d1-default-rtdb.firebaseio.com",
-            projectId: "reflex-779d1",
-            storageBucket: "reflex-779d1.firebasestorage.app",
-            messagingSenderId: "863266679437",
-            appId: "1:863266679437:web:48ae4e8889632a7391d0c4",
-            measurementId: "G-QRW0KBDJR6"
+            projectId: "reflex-779d1"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const listContainer = document.getElementById('deliveries-list');
-        const emptyState = document.getElementById('empty-state');
 
-        window.injectMockOrder = function() {
+        // Retailer places a new request
+        window.injectMockOrder = () => {
             const newRef = push(ref(db, 'deliveries'));
             set(newRef, {
                 id: newRef.key,
                 customerName: "Amina Mohamed",
-                phone: "+254712345678",
                 address: "Moi Avenue, Shop #4",
-                itemDescription: "Electronics - Smartphone (1 unit)",
                 status: "REQUESTED",
-                riderId: null,
-                createdAt: Date.now(),
-                updatedAt: Date.now()
+                riderId: null
             });
         };
 
-        window.assignDelivery = function(id) {
-            const selectWheel = document.getElementById(`select-${id}`);
-            const selectedRider = selectWheel.value;
-
-            if (!selectedRider) {
-                alert("Please select an available rider to match this package!");
-                return;
-            }
-
+        // Dispatcher assigns the trip to Juma (rider_01)
+        window.assignDelivery = (id) => {
             update(ref(db, `deliveries/${id}`), {
-                riderId: selectedRider,
-                status: "ASSIGNED",
-                updatedAt: Date.now()
+                riderId: "rider_01",
+                status: "ASSIGNED"
             });
         };
 
+        // Rider marks the trip as completed
+        window.completeDelivery = (id) => {
+            update(ref(db, `deliveries/${id}`), { status: "DELIVERED" });
+        };
+
+        // Sync both views simultaneously 
         onValue(ref(db, 'deliveries'), (snapshot) => {
             const data = snapshot.val() || {};
-            const activeRequests = Object.values(data).filter(d => d.status === "REQUESTED");
+            const items = Object.values(data);
 
-            if (activeRequests.length === 0) {
-                listContainer.innerHTML = '';
-                listContainer.appendChild(emptyState);
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-            listContainer.innerHTML = activeRequests.map(d => `
-                <div id="card-${d.id}" class="bg-slate-950 border border-slate-800 hover:border-slate-700/80 transition-all duration-200 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-md">
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-extrabold text-amber-400 tracking-wider bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">${d.id}</span>
-                            <span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-500/20 uppercase tracking-wide">On-Demand Request</span>
-                        </div>
-                        <h3 class="font-bold text-lg text-slate-100">${d.customerName}</h3>
-                        <p class="text-sm text-slate-400 flex items-center gap-1.5">📍 ${d.address}</p>
-                        <p class="text-xs text-slate-500">📱 Mobile: ${d.phone} • Cargo: <span class="text-slate-400">${d.itemDescription}</span></p>
-                    </div>
-                    <div class="flex sm:items-center gap-3 w-full md:w-auto border-t border-slate-900 md:border-none pt-4 md:pt-0">
-                        <select id="select-${d.id}" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-xl px-3 py-2.5 w-full md:w-48 cursor-pointer">
-                            <option value="">-- Match Rider --</option>
-                            <option value="rider_01">Juma Pikipiki (rider_01)</option>
-                            <option value="rider_03">Moraa Rides (rider_03)</option>
-                        </select>
-                        <button onclick="assignDelivery('${d.id}')" class="bg-slate-100 hover:bg-white text-slate-950 font-bold text-sm px-5 py-2.5 rounded-xl transition cursor-pointer active:scale-95">
-                            Dispatch Trip
-                        </button>
-                    </div>
+            // Filter for Dispatcher (New requests)
+            const requested = items.filter(d => d.status === "REQUESTED");
+            document.getElementById('deliveries-list').innerHTML = requested.length ? requested.map(d => `
+                <div class="bg-slate-900 p-4 rounded-xl flex justify-between items-center border border-slate-800">
+                    <div><p class="font-bold">${d.customerName}</p><p class="text-xs text-slate-400">📍 ${d.address}</p></div>
+                    <button onclick="assignDelivery('${d.id}')" class="bg-slate-100 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg">Assign to Juma</button>
                 </div>
-            `).join('');
+            `).join('') : '<p class="text-slate-500 text-xs">No active requests.</p>';
+
+            // Filter for Rider Juma (Assigned to rider_01)
+            const riderJobs = items.filter(d => d.status === "ASSIGNED" && d.riderId === "rider_01");
+            document.getElementById('rider-list').innerHTML = riderJobs.length ? riderJobs.map(d => `
+                <div class="bg-emerald-950/20 p-4 rounded-xl flex justify-between items-center border border-emerald-500/20">
+                    <div><p class="font-bold text-emerald-300">${d.customerName}</p><p class="text-xs text-slate-400">Deliver to: ${d.address}</p></div>
+                    <button onclick="completeDelivery('${d.id}')" class="bg-emerald-500 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg">Complete Job</button>
+                </div>
+            `).join('') : '<p class="text-slate-500 text-xs">No active deliveries assigned.</p>';
         });
     </script>
 </body>
