@@ -1,105 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Reflex - Delivery View</title>
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --panel: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --primary: #2563eb;
-      --success: #16a34a;
-      --warning: #f59e0b;
-      --border: #e5e7eb;
-      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-    }
-
+    :root { --bg: #f5f7fb; --panel: #fff; --text: #1f2937; --muted: #6b7280; --primary: #2563eb; --border: #e5e7eb; --shadow: 0 10px 24px rgba(15,23,42,.08); }
     * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 24px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-
-    .status-chip {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
+    body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); }
+    .container { max-width: 1100px; margin: 40px auto; padding: 24px; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 2rem; }
+    .status-chip { display: inline-block; padding: 6px 12px; border-radius: 999px; font-size: .75rem; font-weight: 700; text-transform: uppercase; background: #dbeafe; color: #1d4ed8; }
     .status-chip.assigned { background: #dbeafe; color: #1d4ed8; }
     .status-chip.requested { background: #fef3c7; color: #92400e; }
-    .status-chip.picked_up { background: #ede9fe; color: #6d28d9; }
     .status-chip.delivered { background: #dcfce7; color: #166534; }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .delivery-item {
-      background: #f9fafb;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
-    }
-
-    .delivery-item h2 {
-      margin: 0 0 12px;
-      font-size: 1.1rem;
-    }
-
-    .meta {
-      display: grid;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 0.96rem;
-    }
-
-    .empty {
-      padding: 28px;
-      text-align: center;
-      color: var(--muted);
-    }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .delivery-item { background: #f9fafb; border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .delivery-item h2 { margin: 0 0 12px; font-size: 1.1rem; }
+    .meta { display: grid; gap: 8px; color: var(--muted); font-size: .96rem; }
+    .empty { padding: 28px; text-align: center; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -109,21 +30,21 @@
       <span id="countBadge" class="status-chip assigned">0 deliveries</span>
     </div>
 
-    <form id="deliveryForm" class="card" style="margin-bottom: 20px; display: grid; gap: 12px; max-width: 700px;">
-      <h2 style="margin: 0;">Create Delivery Request</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-        <input type="text" name="customerName" placeholder="Customer name" required style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;" />
-        <input type="tel" name="phone" placeholder="Phone" required style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;" />
+    <form id="deliveryForm" class="card" style="display:grid; gap:12px; max-width:700px;">
+      <h2 style="margin:0">Create Delivery Request</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+        <input type="text" name="customerName" placeholder="Customer name" required style="padding:10px; border:1px solid var(--border); border-radius:8px;">
+        <input type="tel" name="phone" placeholder="Phone" required style="padding:10px; border:1px solid var(--border); border-radius:8px;">
       </div>
-      <input type="text" name="address" placeholder="Address" required style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;" />
-      <input type="text" name="itemDescription" placeholder="Item description" required style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;" />
-      <button type="submit" style="padding: 12px 16px; border: none; border-radius: 8px; background: var(--primary); color: white; font-weight: 700; cursor: pointer;">Create Delivery</button>
+      <input type="text" name="address" placeholder="Address" required style="padding:10px; border:1px solid var(--border); border-radius:8px;">
+      <input type="text" name="itemDescription" placeholder="Item description" required style="padding:10px; border:1px solid var(--border); border-radius:8px;">
+      <button type="submit" style="padding:12px; border:none; border-radius:8px; background:var(--primary); color:#fff; font-weight:700; cursor:pointer">Create Delivery</button>
     </form>
 
-    <div class="card" style="margin-bottom: 20px; max-width: 700px;">
-      <h2 style="margin-top: 0;">Delivery Completion Scan</h2>
-      <div id="reader" style="width: 100%; max-width: 420px; margin: 0 auto;"></div>
-      <div id="scanStatus" style="margin-top: 12px; color: var(--muted);">Scan a delivery ID QR code to mark it as delivered.</div>
+    <div class="card" style="max-width:700px;">
+      <h2 style="margin-top:0">Delivery Completion Scan</h2>
+      <div id="reader" style="width:100%; max-width:420px; margin:0 auto;"></div>
+      <div id="scanStatus" style="margin-top:12px; color:var(--muted);">Scan a delivery ID QR code to mark it as delivered.</div>
     </div>
 
     <div id="app" class="card"></div>
@@ -134,205 +55,68 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "reflex-app.firebaseapp.com",
-      databaseURL: "https://reflex-app-default-rtdb.firebaseio.com",
-      projectId: "reflex-app",
-      storageBucket: "reflex-app.appspot.com",
-      messagingSenderId: "1234567890",
-      appId: "YOUR_APP_ID"
+    const config = {
+      apiKey: "AIzaSyAwtJj_eRuROtBoLdek-TLxLqRC4lOc3cM",
+      authDomain: "reflex-779d1.firebaseapp.com",
+      databaseURL: "https://reflex-779d1-default-rtdb.firebaseio.com",
+      projectId: "reflex-779d1",
+      storageBucket: "reflex-779d1.firebasestorage.app",
+      messagingSenderId: "863266679437",
+      appId: "1:863266679437:web:48ae4e8889632a7391d0c4",
+      measurementId: "G-QRW0KBDJR6"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const app = initializeApp(config), db = getDatabase(app);
+    const appRoot = document.getElementById("app"), countBadge = document.getElementById("countBadge"), deliveryForm = document.getElementById("deliveryForm"), scanStatus = document.getElementById("scanStatus");
 
-    const appRoot = document.getElementById("app");
-    const countBadge = document.getElementById("countBadge");
-    const deliveryForm = document.getElementById("deliveryForm");
-    const scanStatus = document.getElementById("scanStatus");
-
-    const assignRider = (deliveryId, riderId) => {
-      const updates = {};
-      updates[`/deliveries/${deliveryId}/riderId`] = riderId;
-      updates[`/deliveries/${deliveryId}/status`] = "ASSIGNED";
-      updates[`/deliveries/${deliveryId}/updatedAt`] = Date.now();
-
-      update(ref(db), updates);
+    const assignRider = (id, rId) => update(ref(db), { [`/deliveries/${id}/riderId`]: rId, [`/deliveries/${id}/status`]: "ASSIGNED", [`/deliveries/${id}/updatedAt`]: Date.now() });
+    const updateStatus = (id, s) => {
+      update(ref(db), { [`/deliveries/${id}/status`]: s, [`/deliveries/${id}/updatedAt`]: Date.now() });
+      scanStatus.textContent = `Delivery ${id} marked as ${s}.`;
     };
 
-    const updateDeliveryStatus = (deliveryId, newStatus) => {
-      if (!deliveryId) return;
-
-      const updates = {};
-      updates[`/deliveries/${deliveryId}/status`] = newStatus;
-      updates[`/deliveries/${deliveryId}/updatedAt`] = Date.now();
-
-      update(ref(db), updates);
-      scanStatus.textContent = `Delivery ${deliveryId} marked as ${newStatus}.`;
+    const createDelivery = (name, phone, addr, desc) => {
+      const newRef = push(ref(db, "deliveries"));
+      set(newRef, { id: newRef.key, customerName: name, phone, address: addr, itemDescription: desc, status: "REQUESTED", riderId: null, createdAt: Date.now(), updatedAt: Date.now() });
     };
 
-    const formatDate = (timestamp) => {
-      if (!timestamp) return "N/A";
-      return new Date(timestamp).toLocaleString();
-    };
-
-    const createDelivery = (customerName, phone, address, itemDescription) => {
-      const deliveryListRef = ref(db, "deliveries");
-      const newDeliveryRef = push(deliveryListRef);
-
-      const payload = {
-        id: newDeliveryRef.key,
-        customerName,
-        phone,
-        address,
-        itemDescription,
-        status: "REQUESTED",
-        riderId: null,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      };
-
-      set(newDeliveryRef, payload);
-      return newDeliveryRef.key;
-    };
-
-    const renderDeliveries = (deliveries) => {
-      if (!deliveries || deliveries.length === 0) {
-        appRoot.innerHTML = '<div class="empty">No deliveries found.</div>';
-        countBadge.textContent = '0 deliveries';
-        return;
-      }
-
-      const items = deliveries.map((delivery) => {
-        const statusClass = delivery.status ? delivery.status.toLowerCase().replace(/_/g, "-") : "requested";
-        const riderId = delivery.riderId || "Unassigned";
-
-        return `
-          <div class="delivery-item">
-            <h2>${delivery.id}</h2>
-            <div class="meta">
-              <strong>${delivery.customerName}</strong>
-              <span>${delivery.phone}</span>
-              <span>${delivery.address}</span>
-              <span>${delivery.itemDescription}</span>
-              <span><span class="status-chip ${statusClass}">${delivery.status}</span></span>
-              <span>Rider: ${riderId}</span>
-              <span>Created: ${formatDate(delivery.createdAt)}</span>
-              <span>Updated: ${formatDate(delivery.updatedAt)}</span>
-              <label style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-                <span>Assign rider:</span>
-                <select data-delivery-id="${delivery.id}" style="padding:6px 8px; border:1px solid var(--border); border-radius:6px;">
-                  <option value="">Select rider</option>
-                  <option value="rider_01" ${riderId === "rider_01" ? "selected" : ""}>rider_01</option>
-                  <option value="rider_02" ${riderId === "rider_02" ? "selected" : ""}>rider_02</option>
-                  <option value="rider_03" ${riderId === "rider_03" ? "selected" : ""}>rider_03</option>
-                </select>
-              </label>
-            </div>
+    const render = (list) => {
+      if (!list || !list.length) return appRoot.innerHTML = '<div class="empty">No deliveries found.</div>', countBadge.textContent = "0 deliveries";
+      appRoot.innerHTML = `<div class="grid">${list.map(d => `
+        <div class="delivery-item">
+          <h2>${d.id}</h2>
+          <div class="meta">
+            <strong>${d.customerName}</strong><span>${d.phone}</span><span>${d.address}</span><span>${d.itemDescription}</span>
+            <span><span class="status-chip ${d.status?.toLowerCase().replace(/_/g, "-")}">${d.status}</span></span>
+            <span>Rider: ${d.riderId || "Unassigned"}</span>
+            <span>Created: ${new Date(d.createdAt).toLocaleString()}</span>
+            <label style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+              <span>Assign:</span>
+              <select data-id="${d.id}" style="padding:6px; border-radius:6px; border:1px solid var(--border)">
+                <option value="">Select rider</option>
+                <option value="rider_01" ${d.riderId==="rider_01"?"selected":""}>rider_01</option>
+                <option value="rider_02" ${d.riderId==="rider_02"?"selected":""}>rider_02</option>
+              </select>
+            </label>
           </div>
-        `;
-      }).join("");
-
-      appRoot.innerHTML = `<div class="grid">${items}</div>`;
-      countBadge.textContent = `${deliveries.length} delivery${deliveries.length > 1 ? "ies" : "y"}`;
-
-      appRoot.querySelectorAll("select[data-delivery-id]").forEach((select) => {
-        select.addEventListener("change", (event) => {
-          const deliveryId = event.target.dataset.deliveryId;
-          const riderId = event.target.value;
-          if (!deliveryId || !riderId) return;
-          assignRider(deliveryId, riderId);
-        });
-      });
+        </div>`).join("")}</div>`;
+      countBadge.textContent = `${list.length} delivery${list.length > 1 ? "ies" : "y"}`;
+      appRoot.querySelectorAll("select[data-id]").forEach(s => s.addEventListener("change", e => assignRider(e.target.dataset.id, e.target.value)));
     };
 
-    const renderRetailerTable = (data) => {
-      const deliveries = data ? Object.values(data).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)) : [];
-      renderDeliveries(deliveries);
-    };
+    onValue(ref(db, "deliveries"), s => render(s.val() ? Object.values(s.val()).sort((a, b) => b.createdAt - a.createdAt) : []));
 
-    async function loadFromFirebase() {
-      try {
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const deliveriesRef = ref(db, "deliveries");
-
-        onValue(deliveriesRef, (snapshot) => {
-          const data = snapshot.val() || {};
-          renderRetailerTable(data);
-        }, () => {
-          loadFallbackData();
-        });
-      } catch (error) {
-        loadFallbackData();
-      }
-    }
-
-    async function loadFallbackData() {
-      try {
-        const response = await fetch("./deliveries.json");
-        if (!response.ok) {
-          throw new Error("Fallback file not available");
-        }
-
-        const data = await response.json();
-        const deliveries = Object.values(data.deliveries || {});
-        renderDeliveries(deliveries);
-      } catch (error) {
-        const fallback = [
-          {
-            id: "DEL-9842",
-            customerName: "Amina Mohamed",
-            phone: "+254712345678",
-            address: "Moi Avenue, Shop #4",
-            itemDescription: "Electronics - Smartphone",
-            status: "ASSIGNED",
-            riderId: "rider_01",
-            createdAt: 1724900000000,
-            updatedAt: 1724900500000
-          }
-        ];
-
-        renderDeliveries(fallback);
-      }
-    }
-
-    deliveryForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.currentTarget);
-      const customerName = String(formData.get("customerName") || "").trim();
-      const phone = String(formData.get("phone") || "").trim();
-      const address = String(formData.get("address") || "").trim();
-      const itemDescription = String(formData.get("itemDescription") || "").trim();
-
-      if (!customerName || !phone || !address || !itemDescription) {
-        return;
-      }
-
-      createDelivery(customerName, phone, address, itemDescription);
-      event.currentTarget.reset();
+    deliveryForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      createDelivery(fd.get("customerName"), fd.get("phone"), fd.get("address"), fd.get("itemDescription"));
+      e.currentTarget.reset();
     });
 
-    window.createDelivery = createDelivery;
-    window.renderRetailerTable = renderRetailerTable;
-    window.updateDeliveryStatus = updateDeliveryStatus;
-
     if (window.Html5QrcodeScanner) {
-      const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-
-      html5QrcodeScanner.render((decodedText, decodedResult) => {
-        const deliveryId = String(decodedText).trim();
-        if (!deliveryId) return;
-
-        updateDeliveryStatus(deliveryId, "DELIVERED");
-        html5QrcodeScanner.clear().catch(() => {});
-      });
-    } else {
-      scanStatus.textContent = "QR scanner library failed to load.";
+      const scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+      scanner.render(text => { updateStatus(text.trim(), "DELIVERED"); scanner.clear().catch(()=>{}); });
     }
-
-    loadFromFirebase();
   </script>
 </body>
 </html>
