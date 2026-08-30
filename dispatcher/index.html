@@ -3,28 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reflex - Dispatch & Rider Sync</title>
+    <title>Reflex - Dispatch Workflow</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 p-6 min-h-screen">
-    <div class="max-w-4xl mx-auto space-y-8">
-        <!-- 1. Dispatcher / Retailer Portal -->
-        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 class="text-lg font-bold">Inbound Requests (Retailer)</h2>
-                    <p class="text-xs text-slate-400">Waiting for dispatch</p>
-                </div>
-                <button onclick="injectMockOrder()" class="bg-amber-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg">+ Simulate Order</button>
+<body class="bg-slate-900 text-slate-100 p-4 min-h-screen">
+    <div class="max-w-xl mx-auto space-y-6">
+        <!-- 1. Role Selection Menu -->
+        <div id="role-select" class="space-y-4 text-center py-10">
+            <h1 class="text-2xl font-black text-amber-500 tracking-wider">REFLEX DISPATCH ENGINE</h1>
+            <p class="text-slate-400 text-sm">Select a dashboard view to interact with Firebase:</p>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="showPortal('retailer')" class="bg-slate-800 p-4 rounded-xl font-bold hover:bg-slate-700 transition">🛒 Retailer (Create Orders)</button>
+                <button onclick="showPortal('dispatcher')" class="bg-slate-800 p-4 rounded-xl font-bold hover:bg-slate-700 transition">📋 Dispatcher (Assign Orders)</button>
+                <button onclick="showPortal('rider')" class="bg-slate-800 p-4 rounded-xl font-bold hover:bg-slate-700 transition">🏍️ Rider (View & Complete)</button>
             </div>
-            <div id="deliveries-list" class="space-y-3"></div>
         </div>
 
-        <!-- 2. Rider Portal (Juma Pikipiki / rider_01) -->
-        <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800">
-            <h2 class="text-lg font-bold mb-1 text-emerald-400">🏍️ Rider Portal (Juma - rider_01)</h2>
-            <p class="text-xs text-slate-400 mb-4">Assigned trips syncing in real time</p>
-            <div id="rider-list" class="space-y-3"></div>
+        <!-- 2. Portal Container with Back Button -->
+        <div id="portal-view" class="hidden space-y-4">
+            <button onclick="goBack()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition">
+                ⬅ Back to Role Menu
+            </button>
+            
+            <!-- Retailer View -->
+            <div id="retailer-view" class="hidden bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold">🛒 Retailer Portal</h2>
+                <button onclick="createOrder()" class="bg-amber-500 text-slate-950 font-bold w-full py-2.5 rounded-xl transition hover:bg-amber-400">Place Delivery Request</button>
+            </div>
+
+            <!-- Dispatcher View -->
+            <div id="dispatcher-view" class="hidden bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold">📋 Dispatcher Portal</h2>
+                <p class="text-xs text-slate-400">Inbound orders from retailers waiting for assignment:</p>
+                <div id="dispatch-list" class="space-y-2 text-sm"></div>
+            </div>
+
+            <!-- Rider View -->
+            <div id="rider-view" class="hidden bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                <h2 class="text-lg font-bold text-emerald-400">🏍️ Rider Portal (Juma - rider_01)</h2>
+                <p class="text-xs text-slate-400">Your assigned active deliveries:</p>
+                <div id="rider-list" class="space-y-2 text-sm"></div>
+            </div>
         </div>
     </div>
 
@@ -32,63 +51,57 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAwtJj_eRuROtBoLdek-TLxLqRC4lOc3cM",
-            authDomain: "reflex-779d1.firebaseapp.com",
-            databaseURL: "https://reflex-779d1-default-rtdb.firebaseio.com",
-            projectId: "reflex-779d1"
+        const db = getDatabase(initializeApp({ databaseURL: "https://reflex-779d1-default-rtdb.firebaseio.com" }));
+
+        window.showPortal = (role) => {
+            document.getElementById('role-select').classList.add('hidden');
+            document.getElementById('portal-view').classList.remove('hidden');
+            ['retailer', 'dispatcher', 'rider'].forEach(r => document.getElementById(`${r}-view`).classList.add('hidden'));
+            document.getElementById(`${role}-view`).classList.remove('hidden');
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        window.goBack = () => {
+            document.getElementById('role-select').classList.remove('hidden');
+            document.getElementById('portal-view').classList.add('hidden');
+        };
 
-        // Retailer places a new request
-        window.injectMockOrder = () => {
+        // Retailer: Add a new request
+        window.createOrder = () => {
             const newRef = push(ref(db, 'deliveries'));
-            set(newRef, {
-                id: newRef.key,
-                customerName: "Amina Mohamed",
-                address: "Moi Avenue, Shop #4",
-                status: "REQUESTED",
-                riderId: null
-            });
+            set(newRef, { id: newRef.key, customerName: "Customer #" + Math.floor(Math.random() * 9000 + 1000), address: "Nairobi Central", status: "REQUESTED", riderId: null });
         };
 
-        // Dispatcher assigns the trip to Juma (rider_01)
-        window.assignDelivery = (id) => {
-            update(ref(db, `deliveries/${id}`), {
-                riderId: "rider_01",
-                status: "ASSIGNED"
-            });
+        // Dispatcher: Assign Order to Rider
+        window.assignOrder = (id) => {
+            update(ref(db, `deliveries/${id}`), { riderId: "rider_01", status: "ASSIGNED" });
         };
 
-        // Rider marks the trip as completed
-        window.completeDelivery = (id) => {
+        // Rider: Complete Order
+        window.completeOrder = (id) => {
             update(ref(db, `deliveries/${id}`), { status: "DELIVERED" });
         };
 
-        // Sync both views simultaneously 
+        // Real-Time Sync Syncs All Portals
         onValue(ref(db, 'deliveries'), (snapshot) => {
-            const data = snapshot.val() || {};
-            const items = Object.values(data);
-
-            // Filter for Dispatcher (New requests)
-            const requested = items.filter(d => d.status === "REQUESTED");
-            document.getElementById('deliveries-list').innerHTML = requested.length ? requested.map(d => `
-                <div class="bg-slate-900 p-4 rounded-xl flex justify-between items-center border border-slate-800">
-                    <div><p class="font-bold">${d.customerName}</p><p class="text-xs text-slate-400">📍 ${d.address}</p></div>
-                    <button onclick="assignDelivery('${d.id}')" class="bg-slate-100 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg">Assign to Juma</button>
+            const items = Object.values(snapshot.val() || {});
+            
+            // Dispatcher list (Unassigned)
+            const req = items.filter(d => d.status === "REQUESTED");
+            document.getElementById('dispatch-list').innerHTML = req.length ? req.map(d => `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <div><p class="font-bold">${d.customerName}</p><p class="text-xs text-slate-500">📍 ${d.address}</p></div>
+                    <button onclick="assignOrder('${d.id}')" class="bg-amber-500 text-slate-950 px-3 py-1.5 text-xs font-bold rounded-lg transition hover:bg-amber-400">Assign to Juma</button>
                 </div>
-            `).join('') : '<p class="text-slate-500 text-xs">No active requests.</p>';
+            `).join('') : '<p class="text-slate-500 text-xs py-2">No pending retailer orders.</p>';
 
-            // Filter for Rider Juma (Assigned to rider_01)
-            const riderJobs = items.filter(d => d.status === "ASSIGNED" && d.riderId === "rider_01");
-            document.getElementById('rider-list').innerHTML = riderJobs.length ? riderJobs.map(d => `
-                <div class="bg-emerald-950/20 p-4 rounded-xl flex justify-between items-center border border-emerald-500/20">
-                    <div><p class="font-bold text-emerald-300">${d.customerName}</p><p class="text-xs text-slate-400">Deliver to: ${d.address}</p></div>
-                    <button onclick="completeDelivery('${d.id}')" class="bg-emerald-500 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg">Complete Job</button>
+            // Rider Juma list (Assigned to him)
+            const assigned = items.filter(d => d.status === "ASSIGNED" && d.riderId === "rider_01");
+            document.getElementById('rider-list').innerHTML = assigned.length ? assigned.map(d => `
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <div><p class="font-bold text-emerald-400">${d.customerName}</p><p class="text-xs text-slate-500">📍 ${d.address}</p></div>
+                    <button onclick="completeOrder('${d.id}')" class="bg-emerald-500 text-slate-950 px-3 py-1.5 text-xs font-bold rounded-lg transition hover:bg-emerald-400">Complete</button>
                 </div>
-            `).join('') : '<p class="text-slate-500 text-xs">No active deliveries assigned.</p>';
+            `).join('') : '<p class="text-slate-500 text-xs py-2">No assigned jobs yet.</p>';
         });
     </script>
 </body>
