@@ -9,8 +9,14 @@
 <body class="bg-slate-50 text-slate-800 p-6 min-h-screen">
   <div class="max-w-xl mx-auto space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-xl font-bold text-slate-900">🛒 Retailer Portal</h1>
-      <span id="count" class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">0 Orders</span>
+      <div class="flex items-center gap-3">
+        <h1 class="text-xl font-bold text-slate-900">🛒 Retailer Portal</h1>
+        <span id="count" class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">0 Orders</span>
+      </div>
+      <!-- Back Button -->
+      <a href="../index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl transition">
+        ⬅ Back to Home
+      </a>
     </div>
 
     <!-- Create Request Form -->
@@ -33,8 +39,9 @@
   </div>
 
   <script type="module">
+    // Imported "set" to fix the double push bug
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const db = getDatabase(initializeApp({
       databaseURL: "https://reflex-779d1-default-rtdb.firebaseio.com"
@@ -45,7 +52,7 @@
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
       
-      const newRef = push(ref(db, "deliveries"));
+      const newRef = push(ref(db, "deliveries")); // Generates the correct key
       const newObj = {
         id: newRef.key,
         customerName: fd.get("customerName"),
@@ -58,7 +65,7 @@
         updatedAt: Date.now()
       };
       
-      push(ref(db, "deliveries"), newObj);
+      set(newRef, newObj); // Writes directly to the generated key (FIX)
       e.currentTarget.reset();
     });
 
