@@ -7,27 +7,33 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
-    <!-- Top App Bar with Integrated Back Button -->
+    <!-- Top Nav with Back Button -->
     <nav class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center gap-3">
             <div class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xl">REFLEX</div>
             <span class="text-xs font-bold text-slate-400 uppercase hidden sm:inline pl-3 border-l border-slate-800">Rider Dashboard</span>
         </div>
-        <a href="../index.html" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition">
-            ⬅ Back to Home
-        </a>
+        <a href="../index.html" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition">⬅ Back to Home</a>
     </nav>
 
     <!-- Main Content -->
     <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        <div class="flex justify-between items-center bg-slate-950 p-5 border border-slate-800 rounded-2xl">
+        <!-- Switch Drivers and Online status -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-950 p-5 border border-slate-800 rounded-2xl">
             <div>
-                <h1 class="text-xl font-bold tracking-tight">My Active Deliveries</h1>
-                <p class="text-xs text-slate-400 mt-1">Real-time driver assignments for <strong>rider_01</strong></p>
+                <h1 class="text-xl font-bold tracking-tight">Active Deliveries</h1>
+                <p class="text-xs text-slate-400 mt-1">Assignments for <strong id="current-rider-name" class="text-amber-400">Juma Pikipiki (rider_01)</strong></p>
             </div>
-            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
-            </span>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <select id="rider-select" class="bg-slate-900 border border-slate-800 text-slate-200 text-xs font-bold rounded-xl px-3 py-2 cursor-pointer outline-none">
+                    <option value="rider_01">Juma Pikipiki (rider_01)</option>
+                    <option value="rider_03">Moraa Rides (rider_03)</option>
+                </select>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
+                </span>
+            </div>
         </div>
 
         <div id="deliveries-list" class="space-y-4"></div>
@@ -39,29 +45,40 @@
     <script type="module">
         import { db, ref, onValue, update } from "../firebase.js";
 
-        const RIDER_ID = "rider_01";
         const listContainer = document.getElementById("deliveries-list");
         const emptyState = document.getElementById("empty-state");
+        const riderSelect = document.getElementById("rider-select");
+        const riderNameLabel = document.getElementById("current-rider-name");
+
+        let currentRiderId = riderSelect.value;
+        let deliveriesData = {};
+
+        // Switch rider view instantly
+        riderSelect.addEventListener("change", (e) => {
+            currentRiderId = e.target.value;
+            riderNameLabel.textContent = e.target.options[e.target.selectedIndex].text;
+            render();
+        });
 
         onValue(ref(db, "deliveries"), (snapshot) => {
-            const deliveries = snapshot.val();
+            deliveriesData = snapshot.val() || {};
+            render();
+        });
+
+        function render() {
             listContainer.innerHTML = "";
-
-            if (!deliveries) {
-                emptyState.classList.remove("hidden");
-                return;
-            }
-
             let activeCount = 0;
 
-            // We loop with Object.entries to safely fetch the key
-            Object.entries(deliveries).forEach(([key, delivery]) => {
-                const deliveryId = delivery.id || key; // Fixes the "undefined" ID issue
+            Object.entries(deliveriesData).forEach(([key, delivery]) => {
+                const deliveryId = delivery.id || key;
                 const status = delivery.status || "UNKNOWN";
 
-                if (delivery.riderId !== RIDER_ID || status === "DELIVERED" || status === "UNKNOWN") return;
+                if (delivery.riderId !== currentRiderId || status === "DELIVERED" || status === "UNKNOWN") return;
 
                 activeCount++;
+
+                // Solves address rendering errors by trying both database schemas
+                const addressVal = delivery.address || delivery.deliveryAddress || "No Address Provided";
 
                 const buttonText = status === "ASSIGNED" ? "Mark as Picked Up" : "Mark as Delivered";
                 const buttonClass = status === "ASSIGNED" ? "bg-amber-500 text-slate-950 hover:bg-amber-400" : "bg-emerald-500 text-slate-950 hover:bg-emerald-400";
@@ -75,7 +92,7 @@
                             <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">${status}</span>
                         </div>
                         <h2 class="font-bold text-lg text-slate-100">${delivery.customerName || "N/A"}</h2>
-                        <p class="text-xs text-slate-400">📍 Address: ${delivery.address || "No Address Provided"}</p>
+                        <p class="text-xs text-slate-400">📍 Address: ${addressVal}</p>
                         <p class="text-xs text-slate-500">📱 Mobile: ${delivery.phone || "N/A"} • Item: ${delivery.itemDescription || "N/A"}</p>
                     </div>
                     <button class="status-button ${buttonClass} font-bold text-xs px-4 py-2.5 rounded-xl transition active:scale-95 w-full sm:w-auto" data-id="${deliveryId}" data-status="${status}">
@@ -86,9 +103,8 @@
             });
 
             activeCount === 0 ? emptyState.classList.remove("hidden") : emptyState.classList.add("hidden");
-        });
+        }
 
-        // Event delegation for the status update button
         listContainer.addEventListener("click", async (e) => {
             if (!e.target.classList.contains("status-button")) return;
             const btn = e.target;
