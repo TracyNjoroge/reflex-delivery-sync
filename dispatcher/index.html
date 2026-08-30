@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reflex Admin - On-Demand Dispatch</title>
-    <!-- Tailwind Engine for a stunning, modern UI (FIXED) -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
 
-    <!-- Top App Bar (Uber Style) -->
     <nav class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <div class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xl tracking-wider shadow-lg shadow-amber-500/10">REFLEX</div>
+            <div class="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xl tracking-wider shadow-lg">REFLEX</div>
             <span class="text-xs font-bold text-slate-400 tracking-widest uppercase hidden sm:inline border-l border-slate-800 pl-3">Dispatch Engine</span>
         </div>
         <div class="flex items-center gap-4">
@@ -23,34 +21,27 @@
         </div>
     </nav>
 
-    <!-- Main Workspace -->
     <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <!-- Left: Live Active Delivery Orders -->
         <section class="lg:col-span-2 space-y-6">
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-xl font-bold tracking-tight">Inbound Delivery Requests</h2>
-                    <p class="text-xs text-slate-400 mt-1">Incoming retailer requests matching Swaleh's data keys</p>
+                    <p class="text-xs text-slate-400 mt-1">Incoming retailer requests matching active database keys</p>
                 </div>
-                <!-- Independent Testing Button: Lets you work without waiting for Abraham -->
                 <button onclick="injectMockOrder()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700 cursor-pointer">
                     + Simulate Incoming Request
                 </button>
             </div>
 
-            <!-- Main container where orders inject -->
             <div id="deliveries-list" class="space-y-4">
-                <!-- Fallback empty state -->
                 <div id="empty-state" class="bg-slate-950 border border-slate-800 border-dashed rounded-2xl p-12 text-center text-slate-500">
                     <span class="text-4xl block mb-3">📋</span>
                     <p class="text-sm font-medium text-slate-400">Waiting for retail requests.</p>
-                    <p class="text-xs text-slate-600 mt-1">Click "Simulate Incoming Request" above to test your layout immediately!</p>
                 </div>
             </div>
         </section>
 
-        <!-- Right: Fleet Control & Management Panel -->
         <section class="space-y-6">
             <div>
                 <h2 class="text-xl font-bold tracking-tight">Fleet Monitoring</h2>
@@ -60,83 +51,67 @@
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Active Riders</h3>
                 
-                <!-- Rider 1 Card -->
-                <div class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800/60 rounded-xl">
+                <div class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-slate-800/80 rounded-xl flex items-center justify-center font-bold text-lg">🏍️</div>
+                        <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center font-bold text-lg">🏍️</div>
                         <div>
                             <p class="text-sm font-semibold text-slate-200">Juma Pikipiki</p>
-                            <p class="text-xs text-slate-500">KMCA 123X • Nairobi Central</p>
+                            <p class="text-xs text-slate-500">rider_01 • Nairobi Central</p>
                         </div>
                     </div>
                     <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-emerald-500/20">AVAILABLE</span>
                 </div>
 
-                <!-- Rider 2 Card -->
-                <div class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800/60 rounded-xl">
+                <div class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-slate-800/80 rounded-xl flex items-center justify-center font-bold text-lg">🏍️</div>
+                        <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center font-bold text-lg">🏍️</div>
                         <div>
-                            <p class="text-sm font-semibold text-slate-200">Kevin Otieno</p>
-                            <p class="text-xs text-slate-500">KMDQ 789Y • Ngong Road</p>
+                            <p class="text-sm font-semibold text-slate-200">Moraa Rides</p>
+                            <p class="text-xs text-slate-500">rider_03 • Ngong Road</p>
                         </div>
                     </div>
-                    <span class="bg-amber-500/10 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-amber-500/20">ON TRIP</span>
+                    <span class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-md border border-emerald-500/20">AVAILABLE</span>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- Controller Logic for Testing & Future Firebase Handoff -->
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwtJj_eRuROtBoLdek-TLxLqRC4lOc3cM",
+            authDomain: "reflex-779d1.firebaseapp.com",
+            databaseURL: "https://reflex-779d1-default-rtdb.firebaseio.com",
+            projectId: "reflex-779d1",
+            storageBucket: "reflex-779d1.firebasestorage.app",
+            messagingSenderId: "863266679437",
+            appId: "1:863266679437:web:48ae4e8889632a7391d0c4",
+            measurementId: "G-QRW0KBDJR6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
         const listContainer = document.getElementById('deliveries-list');
         const emptyState = document.getElementById('empty-state');
-        let orderCounter = 9842;
 
-        // SIMULATION ENGINE: Lets Milkah build and test completely offline
         window.injectMockOrder = function() {
-            if (emptyState) emptyState.style.display = 'none';
-            orderCounter++;
-            
-            const docId = `DEL-${orderCounter}`;
-            
-            // Uses Swaleh's exact database structure fields
-            const mockData = {
+            const newRef = push(ref(db, 'deliveries'));
+            set(newRef, {
+                id: newRef.key,
                 customerName: "Amina Mohamed",
                 phone: "+254712345678",
                 address: "Moi Avenue, Shop #4",
-                itemDescription: "Electronics - Smartphone (1 unit)"
-            };
-
-            const card = document.createElement('div');
-            card.id = `card-${docId}`;
-            card.className = "bg-slate-950 border border-slate-800 hover:border-slate-700/80 transition-all duration-200 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-md";
-            card.innerHTML = `
-                <div class="space-y-2">
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] font-extrabold text-amber-400 tracking-wider bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">${docId}</span>
-                        <span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-500/20 uppercase tracking-wide">On-Demand Request</span>
-                    </div>
-                    <h3 class="font-bold text-lg text-slate-100">${mockData.customerName}</h3>
-                    <p class="text-sm text-slate-400 flex items-center gap-1.5">📍 ${mockData.address}</p>
-                    <p class="text-xs text-slate-500">📱 Mobile: ${mockData.phone} • Cargo: <span class="text-slate-400">${mockData.itemDescription}</span></p>
-                </div>
-                <div class="flex sm:items-center gap-3 w-full md:w-auto border-t border-slate-900 md:border-none pt-4 md:pt-0">
-                    <select id="select-${docId}" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-500 w-full md:w-48 cursor-pointer">
-                        <option value="">-- Match Rider --</option>
-                        <option value="rider_01">Juma Pikipiki (rider_01)</option>
-                        <option value="rider_03">Moraa Rides (rider_03)</option>
-                    </select>
-                    <button onclick="assignDelivery('${docId}')" class="bg-slate-100 hover:bg-white text-slate-950 font-bold text-sm px-5 py-2.5 rounded-xl transition cursor-pointer whitespace-nowrap active:scale-95">
-                        Dispatch Trip
-                    </button>
-                </div>
-            `;
-            listContainer.appendChild(card);
+                itemDescription: "Electronics - Smartphone (1 unit)",
+                status: "REQUESTED",
+                riderId: null,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            });
         };
 
-        // DISPATCH TRIGGER: Simulates updating the order status
         window.assignDelivery = function(id) {
             const selectWheel = document.getElementById(`select-${id}`);
             const selectedRider = selectWheel.value;
@@ -146,18 +121,49 @@
                 return;
             }
 
-            alert(`Success! ${id} matched with ${selectedRider}. In production, Swaleh's script will switch this status to 'ASSIGNED' and slide it onto Tracy's screen live!`);
-            
-            // Visually remove it from open pool since it's now assigned
-            const targetCard = document.getElementById(`card-${id}`);
-            if (targetCard) targetCard.remove();
-            
-            if (listContainer.children.length === 0 && emptyState) {
-                emptyState.style.display = 'block';
-            }
+            update(ref(db, `deliveries/${id}`), {
+                riderId: selectedRider,
+                status: "ASSIGNED",
+                updatedAt: Date.now()
+            });
         };
+
+        onValue(ref(db, 'deliveries'), (snapshot) => {
+            const data = snapshot.val() || {};
+            const activeRequests = Object.values(data).filter(d => d.status === "REQUESTED");
+
+            if (activeRequests.length === 0) {
+                listContainer.innerHTML = '';
+                listContainer.appendChild(emptyState);
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            listContainer.innerHTML = activeRequests.map(d => `
+                <div id="card-${d.id}" class="bg-slate-950 border border-slate-800 hover:border-slate-700/80 transition-all duration-200 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-md">
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold text-amber-400 tracking-wider bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">${d.id}</span>
+                            <span class="bg-blue-500/10 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-500/20 uppercase tracking-wide">On-Demand Request</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-100">${d.customerName}</h3>
+                        <p class="text-sm text-slate-400 flex items-center gap-1.5">📍 ${d.address}</p>
+                        <p class="text-xs text-slate-500">📱 Mobile: ${d.phone} • Cargo: <span class="text-slate-400">${d.itemDescription}</span></p>
+                    </div>
+                    <div class="flex sm:items-center gap-3 w-full md:w-auto border-t border-slate-900 md:border-none pt-4 md:pt-0">
+                        <select id="select-${d.id}" class="bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-xl px-3 py-2.5 w-full md:w-48 cursor-pointer">
+                            <option value="">-- Match Rider --</option>
+                            <option value="rider_01">Juma Pikipiki (rider_01)</option>
+                            <option value="rider_03">Moraa Rides (rider_03)</option>
+                        </select>
+                        <button onclick="assignDelivery('${d.id}')" class="bg-slate-100 hover:bg-white text-slate-950 font-bold text-sm px-5 py-2.5 rounded-xl transition cursor-pointer active:scale-95">
+                            Dispatch Trip
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        });
     </script>
 </body>
-                        </html>
-    
-
+</html>
