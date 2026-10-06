@@ -1,11 +1,23 @@
+### My Contribution - Team Syntatix (Group 36) | Readiness Sprint - Reflex Delivery Sync
+Role: Frontend & Firebase Integration | **Team:** Syntatix
+ 
+Built real-time delivery coordination prototype for small Kenyan retailers:
+Retailer creates delivery (OPEN) → Dispatcher assigns rider (ASSIGNED) → Rider updates PICKED_UP → DELIVERED
+Implemented real-time sync across 3 views using Firebase Realtime Database listeners
+Vanilla JS + ES Modules + Tailwind CDN — zero build step, fast iteration
+Focus: Solving WhatsApp/phone-call chaos for retailers with central record & live status visibility
+
+Original Team Repo:** [TracyNjoroge/reflex-delivery-sync](https://github.com/TracyNjoroge/reflex-delivery-sync) | Readiness Sprint Prototype/MVP
+**Team:** Tracy Wangari, Swaleh Rama, Emmanuel Ukah, Abraham Makur, Milkah Michira
+---
 # Reflex – Delivery Sync System
 
-> A real-time delivery coordination prototype for small retailers in Kenya.
+A real-time delivery coordination prototype for small retailers in Kenya.
 
 **Project Status:** Prototype / MVP  
 **Sprint:** Readiness Sprint
 
-## 🚀 Overview
+## Overview
 
 Reflex is a prototype delivery coordination system designed for small retailers who currently manage deliveries through WhatsApp messages and phone calls.
 
