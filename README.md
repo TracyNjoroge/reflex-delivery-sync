@@ -1,10 +1,10 @@
 ### My Contribution - Team Syntatix (Group 36) | Readiness Sprint - Reflex Delivery Sync
 Role: Frontend & Firebase Integration | **Team:** Syntatix
  
-Built real-time delivery coordination prototype for small Kenyan retailers:
+Built a real-time delivery coordination prototype for small Kenyan retailers:
 Retailer creates delivery (OPEN) → Dispatcher assigns rider (ASSIGNED) → Rider updates PICKED_UP → DELIVERED
 Implemented real-time sync across 3 views using Firebase Realtime Database listeners
-Vanilla JS + ES Modules + Tailwind CDN — zero build step, fast iteration
+Vanilla JS + ES Modules + Tailwind CDN, zero build step, fast iteration
 Focus: Solving WhatsApp/phone-call chaos for retailers with central record & live status visibility
 
 Original Team Repo:** [TracyNjoroge/reflex-delivery-sync](https://github.com/TracyNjoroge/reflex-delivery-sync) | Readiness Sprint Prototype/MVP
